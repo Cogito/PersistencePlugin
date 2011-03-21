@@ -9,37 +9,30 @@ import java.util.logging.Logger;
  * @author NathanWolf
  * 
  */
-public abstract class DataStore
-{
-    protected static Logger  log            = Logger.getLogger("Minecraft");
+public abstract class DataStore {
+    protected static Logger log = Logger.getLogger("Minecraft");
 
     protected static boolean logStoreAccess = false;
 
-    public static Logger getLogger()
-    {
+    public static Logger getLogger() {
         return log;
     }
 
-    public static void logStoreAccess(String message)
-    {
-        if (logStoreAccess)
-        {
+    public static void logStoreAccess(String message) {
+        if (logStoreAccess) {
             log.info("Persistence: " + message);
         }
     }
 
-    public static void logStoreAccess(String message, int rowCount)
-    {
-        if (logStoreAccess)
-        {
+    public static void logStoreAccess(String message, int rowCount) {
+        if (logStoreAccess) {
             log.info("Persistence: " + String.format(message, rowCount));
         }
     }
 
     protected String schema;
 
-    public DataStore(String schema)
-    {
+    public DataStore(String schema) {
         this.schema = schema;
     }
 
@@ -49,8 +42,8 @@ public abstract class DataStore
      * 
      * This is used to remove deleted objects from a data store.
      * 
-     * @param table
-     *            The table to clear, containing the rows to keep
+     * @param table The table to clear, containing the rows to keep
+     * 
      * @return true if success
      */
     public abstract boolean clear(DataTable table);
@@ -64,10 +57,9 @@ public abstract class DataStore
      * Only rows with a matching primary id will be dropped, and then only if
      * they are not specified in the passed-in table.
      * 
-     * @param table
-     *            The table to clear, containing the rows to keep
-     * @param ids
-     *            A list of primary ids of objects to clear
+     * @param table The table to clear, containing the rows to keep
+     * @param ids A list of primary ids of objects to clear
+     * 
      * @return true if success
      */
     public abstract boolean clearIds(DataTable table, List<Object> ids);
@@ -79,18 +71,16 @@ public abstract class DataStore
      */
     public abstract boolean connect();
 
-    public void copyTable(String sourceTable, String destinationTable)
-    {
-
-    }
+    public void copyTable(String sourceTable, String destinationTable) {}
 
     /**
      * Will attempt to create a table- check to see if the table exists before
      * calling this.
      * 
-     * @param table
-     *            The table definition
+     * @param table The table definition
+     * 
      * @return true if success
+     * 
      * @see #tableExists(DataTable)
      * @see #validateTable(DataTable)
      * 
@@ -105,8 +95,7 @@ public abstract class DataStore
     /**
      * Completely drop a table, allowing it to be re-created.
      * 
-     * @param tableName
-     *            the naem of the table to drop
+     * @param tableName the name of the table to drop
      * @return true on success
      */
     public abstract boolean drop(String tableName);
@@ -115,10 +104,9 @@ public abstract class DataStore
      * Return the table header (column definitions) without querying the table
      * for data.
      * 
-     * @param tableName
-     *            The table to get the header of
-     * @return a DataTable containing one DataRow, representing this table's
-     *         columns
+     * @param tableName The table to get the header of
+     * 
+     * @return a DataTable containing one DataRow, representing this table's columns
      */
     public abstract DataTable getTableHeader(String tableName);
 
@@ -127,13 +115,10 @@ public abstract class DataStore
      * 
      * This is called internally by Persistence.
      * 
-     * @param schema
-     *            The schema this data store connects to
-     * @param p
-     *            The Persistence instance this data store should use.
+     * @param schema The schema this data store connects to
+     * @param p The Persistence instance this data store should use.
      */
-    public void initialize(String schema)
-    {
+    public void initialize(String schema) {
         this.schema = schema;
     }
 
@@ -142,8 +127,7 @@ public abstract class DataStore
      * 
      * @return true if the store cannot be written to
      */
-    public boolean isReadOnly()
-    {
+    public boolean isReadOnly() {
         return false;
     }
 
@@ -152,8 +136,8 @@ public abstract class DataStore
      * 
      * Assumes that the table already exists.
      * 
-     * @param table
-     *            The table to load
+     * @param table The table to load
+     * 
      * @return true if success
      */
     public abstract boolean load(DataTable table);
@@ -163,8 +147,8 @@ public abstract class DataStore
      * 
      * Assumes that the table already exists.
      * 
-     * @param table
-     *            the table
+     * @param table the table
+     * 
      * @return true if success
      */
     public abstract boolean save(DataTable table);
@@ -172,8 +156,8 @@ public abstract class DataStore
     /**
      * Check to see if the specified table exists.
      * 
-     * @param tableName
-     *            The name of the table to check
+     * @param tableName The name of the table to check
+     * 
      * @return true if the table exists
      */
     public abstract boolean tableExists(String tableName);

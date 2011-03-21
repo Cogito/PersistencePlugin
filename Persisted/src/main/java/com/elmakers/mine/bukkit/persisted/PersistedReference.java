@@ -1,7 +1,6 @@
 package com.elmakers.mine.bukkit.persisted;
 
-public interface PersistedReference
-{
+public interface PersistedReference {
     public String getName();
 
     public PersistedClass getReferenceType();

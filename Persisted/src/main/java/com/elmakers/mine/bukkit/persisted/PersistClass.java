@@ -22,8 +22,7 @@ import java.lang.annotation.Target;
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-public @interface PersistClass
-{
+public @interface PersistClass {
     /**
      * Whether or not to keep this entity in the cache.
      * 

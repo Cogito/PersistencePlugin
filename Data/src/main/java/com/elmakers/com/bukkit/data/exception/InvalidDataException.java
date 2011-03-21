@@ -4,91 +4,71 @@ import com.elmakers.mine.bukkit.data.DataField;
 import com.elmakers.mine.bukkit.data.DataRow;
 import com.elmakers.mine.bukkit.data.DataTable;
 
-public class InvalidDataException extends Exception
-{
+public class InvalidDataException extends Exception {
     /**
      * Need to support Serializable via Exception
      */
     private static final long serialVersionUID = 1L;
+    DataField dataField = null;
+    DataRow dataRow = null;
+    DataTable dataTable = null;
 
-    DataField                 dataField        = null;
-
-    DataRow                   dataRow          = null;
-
-    DataTable                 dataTable        = null;
-
-    public InvalidDataException(DataTable dataTable)
-    {
+    public InvalidDataException(DataTable dataTable) {
         this.dataTable = dataTable;
     }
 
-    public InvalidDataException(DataTable dataTable, DataRow dataRow)
-    {
+    public InvalidDataException(DataTable dataTable, DataRow dataRow) {
         this.dataTable = dataTable;
         this.dataRow = dataRow;
     }
 
-    public InvalidDataException(DataTable dataTable, DataRow dataRow,
-            DataField dataField)
-    {
+    public InvalidDataException(DataTable dataTable, DataRow dataRow, DataField dataField) {
         this.dataTable = dataTable;
         this.dataRow = dataRow;
         this.dataField = dataField;
     }
 
-    public InvalidDataException(DataTable dataTable, DataRow dataRow,
-            DataField dataField, String message)
-    {
+    public InvalidDataException(DataTable dataTable, DataRow dataRow, DataField dataField, String message) {
         super(message);
         this.dataTable = dataTable;
         this.dataRow = dataRow;
         this.dataField = dataField;
     }
 
-    public InvalidDataException(DataTable dataTable, DataRow dataRow,
-            String message)
-    {
+    public InvalidDataException(DataTable dataTable, DataRow dataRow, String message) {
         super(message);
         this.dataTable = dataTable;
         this.dataRow = dataRow;
     }
 
-    public InvalidDataException(DataTable dataTable, DataRow dataRow,
-            Throwable cause)
-    {
+    public InvalidDataException(DataTable dataTable, DataRow dataRow, Throwable cause) {
         super(cause);
         this.dataTable = dataTable;
         this.dataRow = dataRow;
     }
 
-    public InvalidDataException(DataTable dataTable, String message)
-    {
+    public InvalidDataException(DataTable dataTable, String message) {
         super(message);
         this.dataTable = dataTable;
     }
 
-    public InvalidDataException(String message)
-    {
+    public InvalidDataException(String message) {
         super(message);
     }
 
-    public InvalidDataException(Throwable cause)
-    {
+    public InvalidDataException(Throwable cause) {
         super(cause);
     }
 
-    public DataField getDataField()
-    {
+    public DataField getDataField() {
         return dataField;
     }
 
-    public DataRow getDataRow()
-    {
+    public DataRow getDataRow() {
         return dataRow;
     }
 
-    public DataTable getDataTable()
-    {
+    public DataTable getDataTable() {
         return dataTable;
     }
 }

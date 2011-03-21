@@ -4,8 +4,7 @@ import java.util.List;
 
 import com.elmakers.mine.bukkit.persistence.exception.InvalidPersistedClassException;
 
-public interface Persistence
-{
+public interface Persistence {
 
     /**
      * Retrieve an instance of the specified type.
@@ -17,13 +16,11 @@ public interface Persistence
      * If an object with the specified id cannot be found, the method returns
      * null;
      * 
-     * @param <T>
-     *            The base type of object. This is an invisible parameter, you
+     * @param <T> The base type of object. This is an invisible parameter, you
      *            don't need to worry about it
-     * @param id
-     *            The id of the object to lookup
-     * @param objectType
-     *            The type of object to search for
+     * @param id The id of the object to lookup
+     * @param objectType The type of object to search for
+     * 
      * @return The object instance with the specified id, or null if not found
      */
     public abstract <T> T get(Object id, Class<T> objectType);
@@ -41,13 +38,10 @@ public interface Persistence
      * instances. You must ensure that your List is of a compatible type with
      * the objects you are retrieving.
      * 
-     * @param <T>
-     *            The base type of object. This is an invisible parameter, you
+     * @param <T> The base type of object. This is an invisible parameter, you
      *            don't need to worry about it
-     * @param objects
-     *            A List (needs not be empty) to populate with object instances
-     * @param objectType
-     *            The type of object to retrieve
+     * @param objects A List (needs not be empty) to populate with object instances
+     * @param objectType The type of object to retrieve
      */
     public abstract <T> void getAll(List<T> objects, Class<T> objectType);
 
@@ -55,12 +49,11 @@ public interface Persistence
      * Retrieve or create a persisted class, using the annotations built into
      * the class.
      * 
-     * @param persistClass
-     *            The annotated Class to persist
+     * @param persistClass The annotated Class to persist
+     * 
      * @return The persisted class definition, or null if failure
      */
-    public PersistedClass getPersistedClass(Class<? extends Object> persistClass)
-            throws InvalidPersistedClassException;
+    public PersistedClass getPersistedClass(Class<? extends Object> persistClass) throws InvalidPersistedClassException;
 
     /**
      * Add an object to the data store.
@@ -72,8 +65,8 @@ public interface Persistence
      * the schema and tables needed to store this object will be created at save
      * time. Then, the tables will be populated with this object's data.
      * 
-     * @param persist
-     *            The object to persist
+     * @param persist The object to persist
+     * 
      * @return false if, for some reason, the storage failed.
      */
     public abstract boolean put(Object persist);
@@ -99,21 +92,17 @@ public interface Persistence
      * would invalidate any externally maintained references, so it needs to
      * merge data instead.
      * 
-     * @param <T>
-     *            The base type of object. This is an invisible parameter, you
+     * @param <T> The base type of object. This is an invisible parameter, you
      *            don't need to worry about it
-     * @param objects
-     *            A list of objects to store
-     * @param objectType
-     *            The type of object to replace instances
+     * @param objects A list of objects to store
+     * @param objectType The type of object to replace instances
      */
     public abstract <T> void putAll(List<T> objects, Class<T> objectType);
 
     /**
      * Remove an object from the cache (and data store on save)
      * 
-     * @param removeObject
-     *            The object to remove
+     * @param removeObject The object to remove
      */
     public abstract void remove(Object removeObject);
 

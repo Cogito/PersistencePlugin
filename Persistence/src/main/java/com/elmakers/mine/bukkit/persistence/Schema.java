@@ -14,54 +14,44 @@ import com.elmakers.mine.bukkit.data.DataStore;
  * @author NathanWolf
  * 
  */
-public class Schema
-{
-    private String                                 name;
-    private final DataStore                        defaultStore;
-    private final List<PersistentClass>            persistedClasses = new ArrayList<PersistentClass>();
-    private final HashMap<String, PersistentClass> nameMap          = new HashMap<String, PersistentClass>();
+public class Schema {
+    private String name;
+    private final DataStore defaultStore;
+    private final List<PersistentClass> persistedClasses = new ArrayList<PersistentClass>();
+    private final HashMap<String, PersistentClass> nameMap = new HashMap<String, PersistentClass>();
 
-    public Schema(String name, DataStore defaultStore)
-    {
+    public Schema(String name, DataStore defaultStore) {
         this.name = name;
         this.defaultStore = defaultStore;
     }
 
-    public String getName()
-    {
+    public String getName() {
         return name;
     }
 
-    public void setName(String name)
-    {
+    public void setName(String name) {
         this.name = name;
     }
 
-    public void addPersistedClass(PersistentClass persistedClass)
-    {
+    public void addPersistedClass(PersistentClass persistedClass) {
         persistedClasses.add(persistedClass);
         nameMap.put(persistedClass.getTableName(), persistedClass);
     }
 
-    public List<PersistentClass> getPersistedClasses()
-    {
+    public List<PersistentClass> getPersistedClasses() {
         return persistedClasses;
     }
 
-    public PersistentClass getPersistedClass(String className)
-    {
+    public PersistentClass getPersistedClass(String className) {
         return nameMap.get(className);
     }
 
-    public DataStore getStore()
-    {
+    public DataStore getStore() {
         return defaultStore;
     }
 
-    public void disconnect()
-    {
-        if (defaultStore != null)
-        {
+    public void disconnect() {
+        if (defaultStore != null) {
             defaultStore.disconnect();
         }
     }

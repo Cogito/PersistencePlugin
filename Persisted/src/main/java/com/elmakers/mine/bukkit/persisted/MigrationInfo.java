@@ -5,29 +5,22 @@ import java.util.List;
 
 import com.elmakers.mine.bukkit.persistence.dao.MigrationStep;
 
-public class MigrationInfo
-{
+public class MigrationInfo {
     protected List<MigrationStep> steps = null;
 
-    public MigrationInfo()
-    {
-    }
+    public MigrationInfo() {}
 
-    public MigrationInfo(PersistedClass entityClass, Migrate info)
-    {
-        if (info.steps() != null)
-        {
+    public MigrationInfo(PersistedClass entityClass, Migrate info) {
+        if (info.steps() != null) {
             steps = new ArrayList<MigrationStep>();
-            for (MigrateStep stepInfo : info.steps())
-            {
+            for (MigrateStep stepInfo : info.steps()) {
                 MigrationStep step = new MigrationStep(entityClass, stepInfo);
                 steps.add(step);
             }
         }
     }
 
-    public List<MigrationStep> getSteps()
-    {
+    public List<MigrationStep> getSteps() {
         return steps;
     }
 }

@@ -25,84 +25,61 @@ import com.elmakers.mine.bukkit.persistence.exception.InvalidPersistedClassExcep
  * @author NathanWolf
  * 
  */
-public class PersistedObject extends PersistedField implements
-        PersistedReference
-{
-    private static int                           deferStackDepth    = 0;
+public class PersistedObject extends PersistedField implements PersistedReference {
+    private static int deferStackDepth = 0;
     private final static List<DeferredReference> deferredReferences = new ArrayList<DeferredReference>();
 
-    protected PersistentClass                    referenceType      = null;
+    protected PersistentClass referenceType = null;
 
-    public PersistedObject(PersistedObject copy)
-    {
+    public PersistedObject(PersistedObject copy) {
         super(copy);
 
-        if (isContained())
-        {
-            try
-            {
+        if (isContained()) {
+            try {
                 referenceType = new PersistentClass(copy.referenceType, this);
-            }
-            catch (InvalidPersistedClassException e)
-            {
+            } catch (InvalidPersistedClassException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
-        }
-        else
-        {
+        } else {
             referenceType = copy.referenceType;
         }
     }
 
     @Override
-    public PersistedObject clone()
-    {
+    public PersistedObject clone() {
         PersistedObject field = new PersistedObject(this);
         return field;
     }
 
-    public PersistedObject(FieldInfo fieldInfo, Field field,
-            PersistentClass owningClass)
-    {
+    public PersistedObject(FieldInfo fieldInfo, Field field, PersistentClass owningClass) {
         super(fieldInfo, field, owningClass);
     }
 
-    public PersistedObject(FieldInfo fieldInfo, Method getter, Method setter,
-            PersistentClass owningClass)
-    {
+    public PersistedObject(FieldInfo fieldInfo, Method getter, Method setter, PersistentClass owningClass) {
         super(fieldInfo, getter, setter, owningClass);
     }
 
     @Override
-    public void bind() throws InvalidPersistedClassException
-    {
-        try
-        {
+    public void bind() throws InvalidPersistedClassException {
+        try {
             referenceType = owningClass.persistence.getPersistedClass(getType());
-        }
-        catch (InvalidPersistedClassException e)
-        {
+        } catch (InvalidPersistedClassException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
 
-        if (referenceType == null)
-        {
+        if (referenceType == null) {
             log.severe("Persistence: Reference field: " + getDataName() + " has no valid reference type");
             return;
         }
 
-        if (isContained() || referenceType.hasContainer())
-        {
+        if (isContained() || referenceType.hasContainer()) {
             // Create a sub-class of the reference class
             referenceType = new PersistentClass(referenceType, this);
             referenceType.bindReferences();
-        }
-        else
-        {
-            if (referenceType.isContainedClass())
-            {
+        } else {
+            if (referenceType.isContainedClass()) {
                 log.warning("Persistence: " + owningClass.getSchemaName() + "." + owningClass.getTableName() + "." + getDataName() + ", entity " + referenceType.getTableName() + " must be contained");
                 referenceType = null;
             }
@@ -110,26 +87,21 @@ public class PersistedObject extends PersistedField implements
     }
 
     @Override
-    public String getDataName()
-    {
-        if (referenceType == null)
-        {
+    public String getDataName() {
+        if (referenceType == null) {
             return null;
         }
 
-        if (container != null)
-        {
+        if (container != null) {
             return getContainedName(container.getDataName(), name);
         }
 
         PersistedField idField = referenceType.getIdField();
         String dataName = name;
-        if (idField != null)
-        {
+        if (idField != null) {
             String idName = idField.getDataName();
             String idRemainder = "";
-            if (idName.length() > 1)
-            {
+            if (idName.length() > 1) {
                 idRemainder = idName.substring(1);
             }
             dataName += idName.substring(0, 1).toUpperCase() + idRemainder;
@@ -138,10 +110,8 @@ public class PersistedObject extends PersistedField implements
     }
 
     @Override
-    public DataType getDataType()
-    {
-        if (referenceType == null)
-        {
+    public DataType getDataType() {
+        if (referenceType == null) {
             return null;
         }
 
@@ -149,10 +119,8 @@ public class PersistedObject extends PersistedField implements
     }
 
     @Override
-    public void populateHeader(DataTable dataTable)
-    {
-        if (isContained() && referenceType != null)
-        {
+    public void populateHeader(DataTable dataTable) {
+        if (isContained() && referenceType != null) {
             referenceType.populateHeader(dataTable);
             return;
         }
@@ -160,33 +128,27 @@ public class PersistedObject extends PersistedField implements
         DataRow headerRow = dataTable.getHeader();
         DataField field = new DataField(getDataName(), getDataType());
         field.setIdField(isIdField());
-        if (headerRow != null)
-        {
+        if (headerRow != null) {
             headerRow.add(field);
         }
     }
 
     @Override
-    public void save(DataRow row, Object o) throws InvalidDataException
-    {
-        if (referenceType == null)
-        {
+    public void save(DataRow row, Object o) throws InvalidDataException {
+        if (referenceType == null) {
             return;
         }
 
-        if (referenceType.hasContainer())
-        {
+        if (referenceType.hasContainer()) {
             Object containedData = get(o);
             referenceType.populate(row, containedData);
             return;
         }
 
         Object referenceId = null;
-        if (o != null)
-        {
+        if (o != null) {
             Object reference = get(o);
-            if (reference != null)
-            {
+            if (reference != null) {
                 referenceId = referenceType.getIdData(reference);
             }
         }
@@ -196,22 +158,16 @@ public class PersistedObject extends PersistedField implements
     }
 
     @Override
-    public void load(DataRow row, Object o) throws InvalidDataException
-    {
-        if (referenceType == null)
-        {
+    public void load(DataRow row, Object o) throws InvalidDataException {
+        if (referenceType == null) {
             return;
         }
 
-        if (isContained())
-        {
+        if (isContained()) {
             Object newInstance = null;
-            try
-            {
+            try {
                 referenceType.createInstance(row);
-            }
-            catch (InvalidDataException e)
-            {
+            } catch (InvalidDataException e) {
             }
             set(o, newInstance);
             return;
@@ -219,31 +175,24 @@ public class PersistedObject extends PersistedField implements
 
         DataField dataField = row.get(getDataName());
         Object referenceId = null;
-        if (dataField != null)
-        {
+        if (dataField != null) {
             referenceId = dataField.getValue();
         }
 
-        if (referenceId == null)
-        {
+        if (referenceId == null) {
             set(o, referenceId);
-        }
-        else
-        {
+        } else {
             deferredReferences.add(new DeferredReference(this, o, referenceId));
         }
     }
 
-    public static void beginDefer()
-    {
+    public static void beginDefer() {
         deferStackDepth++;
     }
 
-    public static void endDefer()
-    {
+    public static void endDefer() {
         deferStackDepth--;
-        if (deferStackDepth > 0)
-        {
+        if (deferStackDepth > 0) {
             return;
         }
 
@@ -251,37 +200,30 @@ public class PersistedObject extends PersistedField implements
         undefer.addAll(deferredReferences);
         deferredReferences.clear();
 
-        for (DeferredReference ref : undefer)
-        {
+        for (DeferredReference ref : undefer) {
             Object reference = ref.referenceField.referenceType.get(ref.referenceId);
-            try
-            {
+            try {
                 ref.referenceField.set(ref.object, reference);
-            }
-            catch (InvalidDataException e)
-            {
+            } catch (InvalidDataException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
 
             // Re-add to cache so that we can cache by the new id
             // Unless this is a contained object, in which case it has no id!
-            if (!ref.referenceField.hasContainer())
-            {
+            if (!ref.referenceField.hasContainer()) {
                 ref.referenceField.owningClass.addToCache(ref.object);
             }
         }
 
     }
 
-    class DeferredReference
-    {
+    class DeferredReference {
         public PersistedObject referenceField;
-        public Object          object;
-        public Object          referenceId;
+        public Object object;
+        public Object referenceId;
 
-        public DeferredReference(PersistedObject field, Object o, Object id)
-        {
+        public DeferredReference(PersistedObject field, Object o, Object id) {
             referenceField = field;
             object = o;
             referenceId = id;
@@ -290,14 +232,12 @@ public class PersistedObject extends PersistedField implements
 
     // Persisted Reference interface
 
-    public boolean isObject()
-    {
+    public boolean isObject() {
         return true;
     }
 
     @Override
-    public PersistentClass getReferenceType()
-    {
+    public PersistentClass getReferenceType() {
         return referenceType;
     }
 }

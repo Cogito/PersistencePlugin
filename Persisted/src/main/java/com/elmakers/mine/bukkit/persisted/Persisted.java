@@ -12,30 +12,23 @@ import com.elmakers.mine.bukkit.persistence.exception.InvalidPersistedClassExcep
  * 
  * @author NathanWolf
  */
-public class Persisted implements Cloneable
-{
+public class Persisted implements Cloneable {
     // TODO: Support one Persistence instance per server
     protected static Persistence persistence = null;
 
-    public static void setPersistence(Server server, Persistence persistence)
-    {
+    public static void setPersistence(Server server, Persistence persistence) {
         Persisted.persistence = persistence;
     }
 
     protected PersistedClass persistedClass = null;
 
-    public Persisted()
-    {
-        try
-        {
+    public Persisted() {
+        try {
             persistedClass = persistence.getPersistedClass(getClass());
-            if (persistedClass == null)
-            {
+            if (persistedClass == null) {
                 throw new InvalidPersistedClassException(getClass(), "Failed to initialize");
             }
-        }
-        catch (InvalidPersistedClassException e)
-        {
+        } catch (InvalidPersistedClassException e) {
             e.printStackTrace();
         }
     }
@@ -47,14 +40,12 @@ public class Persisted implements Cloneable
      * @return a copy of this persisted object
      */
     @Override
-    public Persisted clone()
-    {
+    public Persisted clone() {
         // TODO!
         return null;
     }
 
-    public Persistence getPersistence()
-    {
+    public Persistence getPersistence() {
         return persistedClass.getPersistence();
     }
 
@@ -65,15 +56,12 @@ public class Persisted implements Cloneable
      * @return an auto-generated hash code
      */
     @Override
-    public int hashCode()
-    {
-        if (persistedClass == null)
-        {
+    public int hashCode() {
+        if (persistedClass == null) {
             return 0;
         }
         Object id = persistedClass.getIdData(this);
-        if (id == null)
-        {
+        if (id == null) {
             return 0;
         }
 

@@ -1,14 +1,12 @@
 package com.elmakers.mine.bukkit.persisted;
 
-public class CachedObject
-{
+public class CachedObject {
     private boolean cached;
-    private long    cacheTime;
+    private long cacheTime;
     private boolean dirty;
-    private Object  object;
+    private Object object;
 
-    public CachedObject(Object o)
-    {
+    public CachedObject(Object o) {
         object = o;
         cached = true;
         dirty = false;
@@ -16,46 +14,38 @@ public class CachedObject
         updateCacheTime();
     }
 
-    public long getCacheTime()
-    {
+    public long getCacheTime() {
         return cacheTime;
     }
 
-    public Object getObject()
-    {
+    public Object getObject() {
         return object;
     }
 
-    public boolean isCached()
-    {
+    public boolean isCached() {
         return cached;
     }
 
-    public boolean isDirty()
-    {
+    public boolean isDirty() {
         return dirty;
     }
 
-    public void setCached(boolean c)
-    {
+    public void setCached(boolean c) {
         cached = c;
     }
 
-    public void setObject(Object o)
-    {
+    public void setObject(Object o) {
         object = o;
         dirty = true;
         updateCacheTime();
     }
 
-    public void setSaved()
-    {
+    public void setSaved() {
         dirty = false;
         updateCacheTime();
     }
 
-    protected void updateCacheTime()
-    {
+    protected void updateCacheTime() {
         cacheTime = System.currentTimeMillis();
     }
 

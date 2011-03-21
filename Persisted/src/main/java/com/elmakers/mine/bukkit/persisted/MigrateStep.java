@@ -9,8 +9,7 @@ import java.lang.annotation.Target;
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-public @interface MigrateStep
-{
+public @interface MigrateStep {
     String id();
 
     String pluginVersion() default "";

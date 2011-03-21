@@ -11,15 +11,11 @@ import java.util.logging.Logger;
  * @author NathanWolf
  * 
  */
-public class DataRow
-{
-    protected static Logger              log      = DataStore.getLogger();
-
+public class DataRow {
+    protected static Logger log = DataStore.getLogger();
     protected HashMap<String, DataField> fieldMap = new HashMap<String, DataField>();
-
-    protected List<DataField>            fields   = new ArrayList<DataField>();
-
-    protected DataTable                  table;
+    protected List<DataField> fields = new ArrayList<DataField>();
+    protected DataTable table;
 
     /**
      * Create an empty DataRow.
@@ -27,8 +23,7 @@ public class DataRow
      * This can be used to populate with data for setting data.
      * 
      */
-    public DataRow(DataTable dataTable)
-    {
+    public DataRow(DataTable dataTable) {
         this.table = dataTable;
     }
 
@@ -38,27 +33,22 @@ public class DataRow
      * This is used to set up a row for writing to a store. Do not attempt to
      * add the same field name twice.
      * 
-     * @param newField
-     *            The datafield to add.
+     * @param newField The datafield to add.
      */
-    public void add(DataField newField)
-    {
+    public void add(DataField newField) {
         String fieldName = newField.getName();
-        if (fieldName == null || fieldName.length() <= 0)
-        {
+        if (fieldName == null || fieldName.length() <= 0) {
             log.warning("Persistence: Empty DataRow name");
             return;
         }
 
         DataField existingField = fieldMap.get(fieldName);
-        if (existingField != null)
-        {
+        if (existingField != null) {
             log.warning("Persistence: Warning, duplicate field in DataRow: " + fieldName);
             return;
         }
 
-        if (newField.isIdField())
-        {
+        if (newField.isIdField()) {
             table.addIdFieldName(newField.getName());
         }
 
@@ -69,17 +59,15 @@ public class DataRow
     /**
      * Retrieve a data field from this row by name.
      * 
-     * @param columnName
-     *            The name of the DataField to find
+     * @param columnName The name of the DataField to find
+     * 
      * @return A data field, or null if not found
      */
-    public DataField get(String columnName)
-    {
+    public DataField get(String columnName) {
         return fieldMap.get(columnName);
     }
 
-    public DataField getField(String fieldName)
-    {
+    public DataField getField(String fieldName) {
         return fieldMap.get(fieldName);
     }
 
@@ -88,8 +76,7 @@ public class DataRow
      * 
      * @return The internal list of fields
      */
-    public final List<DataField> getFields()
-    {
+    public final List<DataField> getFields() {
         return fields;
     }
 
@@ -98,23 +85,19 @@ public class DataRow
      * 
      * @return The table this row comes from
      */
-    public DataTable getTable()
-    {
+    public DataTable getTable() {
         return table;
     }
 
-    public boolean isMigrationRequired(DataRow storeTableHeader)
-    {
-        for (DataField field : fields)
-        {
+    public boolean isMigrationRequired(DataRow storeTableHeader) {
+        for (DataField field : fields) {
             DataField storeField = storeTableHeader.getField(field.getName());
 
             // TODO: Type compatibilty check:
             // || storeField.getType() != field.getType())
             // not sufficient ^ Will always auto-migrate.
 
-            if (storeField == null)
-            {
+            if (storeField == null) {
                 return true;
             }
         }

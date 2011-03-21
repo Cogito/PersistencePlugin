@@ -24,23 +24,21 @@ import com.elmakers.mine.bukkit.persistence.exception.InvalidPersistedClassExcep
  * 
  * @author NathanWolf
  */
-public class Persistence implements
-        com.elmakers.mine.bukkit.persisted.Persistence
-{
-    private final Server                                        server;
-    private final DataStoreProvider                             provider;
+public class Persistence implements com.elmakers.mine.bukkit.persisted.Persistence {
+    private final Server server;
+    private final DataStoreProvider provider;
 
-    private static boolean                                      allowOpsSUAccess  = true;
+    private static boolean allowOpsSUAccess = true;
 
-    private static final Logger                                 log               = Logger.getLogger("Minecraft");
+    private static final Logger log = Logger.getLogger("Minecraft");
 
     private final Map<Class<? extends Object>, PersistentClass> persistedClassMap = new ConcurrentHashMap<Class<? extends Object>, PersistentClass>();
-    private final Map<String, Schema>                           schemaMap         = new ConcurrentHashMap<String, Schema>();
+    private final Map<String, Schema> schemaMap = new ConcurrentHashMap<String, Schema>();
 
     // Locks for manual synchronization
 
     // Make sure that we don't create a persisted class twice at the same time
-    private static final Object                                 classCreateLock   = new Object();
+    private static final Object classCreateLock = new Object();
 
     /**
      * Persistence is a singleton, so we hide the constructor.
@@ -51,8 +49,7 @@ public class Persistence implements
      * @see PersistencePlugin#getPersistence()
      * @see Persistence#getInstance()
      */
-    public Persistence(Server server, DataStoreProvider provider)
-    {
+    public Persistence(Server server, DataStoreProvider provider) {
         this.server = server;
         this.provider = provider;
     }
@@ -64,8 +61,7 @@ public class Persistence implements
      * 
      * @return A Logger that can be used for errors or debugging.
      */
-    public static Logger getLogger()
-    {
+    public static Logger getLogger() {
         return log;
     }
 
@@ -76,20 +72,15 @@ public class Persistence implements
      * com.elmakers.mine.bukkit.persistence.IPersistence#getAll(java.util.List,
      * java.lang.Class)
      */
-    public <T> void getAll(List<T> objects, Class<T> objectType)
-    {
+    public <T> void getAll(List<T> objects, Class<T> objectType) {
         PersistentClass persistedClass = null;
-        try
-        {
+        try {
             persistedClass = getPersistedClass(objectType);
-        }
-        catch (InvalidPersistedClassException e)
-        {
+        } catch (InvalidPersistedClassException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        if (persistedClass == null)
-        {
+        if (persistedClass == null) {
             return;
         }
 
@@ -103,20 +94,15 @@ public class Persistence implements
      * com.elmakers.mine.bukkit.persistence.IPersistence#remove(java.lang.Object
      * )
      */
-    public void remove(Object removeObject)
-    {
+    public void remove(Object removeObject) {
         PersistentClass persistedClass = null;
-        try
-        {
+        try {
             persistedClass = getPersistedClass(removeObject.getClass());
-        }
-        catch (InvalidPersistedClassException e)
-        {
+        } catch (InvalidPersistedClassException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        if (persistedClass == null)
-        {
+        if (persistedClass == null) {
             return;
         }
 
@@ -130,20 +116,15 @@ public class Persistence implements
      * com.elmakers.mine.bukkit.persistence.IPersistence#putAll(java.util.List,
      * java.lang.Class)
      */
-    public <T> void putAll(List<T> objects, Class<T> objectType)
-    {
+    public <T> void putAll(List<T> objects, Class<T> objectType) {
         PersistentClass persistedClass = null;
-        try
-        {
+        try {
             persistedClass = getPersistedClass(objectType);
-        }
-        catch (InvalidPersistedClassException e)
-        {
+        } catch (InvalidPersistedClassException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        if (persistedClass == null)
-        {
+        if (persistedClass == null) {
             return;
         }
 
@@ -158,26 +139,20 @@ public class Persistence implements
      * java.lang.Class)
      */
     @SuppressWarnings("unchecked")
-    public <T> T get(Object id, Class<T> objectType)
-    {
+    public <T> T get(Object id, Class<T> objectType) {
         PersistentClass persistedClass = null;
-        try
-        {
+        try {
             persistedClass = getPersistedClass(objectType);
-        }
-        catch (InvalidPersistedClassException e)
-        {
+        } catch (InvalidPersistedClassException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        if (persistedClass == null)
-        {
+        if (persistedClass == null) {
             return null;
         }
 
         Object result = persistedClass.get(id);
-        if (result == null)
-        {
+        if (result == null) {
             return null;
         }
         return (T) result;
@@ -189,25 +164,19 @@ public class Persistence implements
      * @see
      * com.elmakers.mine.bukkit.persistence.IPersistence#put(java.lang.Object)
      */
-    public boolean put(Object persist)
-    {
-        if (persist == null)
-        {
+    public boolean put(Object persist) {
+        if (persist == null) {
             return false;
         }
 
         PersistentClass persistedClass = null;
-        try
-        {
+        try {
             persistedClass = getPersistedClass(persist.getClass());
-        }
-        catch (InvalidPersistedClassException e)
-        {
+        } catch (InvalidPersistedClassException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        if (persistedClass == null)
-        {
+        if (persistedClass == null) {
             return false;
         }
 
@@ -225,10 +194,8 @@ public class Persistence implements
      * need to use it to force an immediate save.
      * 
      */
-    public void save()
-    {
-        for (PersistentClass persistedClass : persistedClassMap.values())
-        {
+    public void save() {
+        for (PersistentClass persistedClass : persistedClassMap.values()) {
             persistedClass.save();
         }
     }
@@ -240,8 +207,7 @@ public class Persistence implements
      * however it is flawed. It will probably be replaced with a "reload" method
      * eventually.
      */
-    public void clear()
-    {
+    public void clear() {
         persistedClassMap.clear();
         schemaMap.clear();
     }
@@ -251,12 +217,11 @@ public class Persistence implements
      * 
      * This function is used for inspecting schemas and entities.
      * 
-     * @param schemaName
-     *            The schema to retrieve
+     * @param schemaName The schema to retrieve
+     * 
      * @return A Schema definition class, containing entity classes
      */
-    public Schema getSchema(String schemaName)
-    {
+    public Schema getSchema(String schemaName) {
         return schemaMap.get(schemaName);
     }
 
@@ -267,8 +232,7 @@ public class Persistence implements
      * 
      * @return The list of schemas
      */
-    public List<Schema> getSchemaList()
-    {
+    public List<Schema> getSchemaList() {
         List<Schema> schemaList = new ArrayList<Schema>();
         schemaList.addAll(schemaMap.values());
         return schemaList;
@@ -278,14 +242,11 @@ public class Persistence implements
      * Retrieve or create a persisted class, using the annotations built into
      * the class.
      * 
-     * @param persistClass
-     *            The annotated Class to persist
+     * @param persistClass The annotated Class to persist
+     * 
      * @return The persisted class definition, or null if failure
      */
-    public PersistentClass getPersistedClass(
-            Class<? extends Object> persistClass)
-            throws InvalidPersistedClassException
-    {
+    public PersistentClass getPersistedClass(Class<? extends Object> persistClass) throws InvalidPersistedClassException {
         /*
          * Look for Class annotations
          */
@@ -295,20 +256,17 @@ public class Persistence implements
         // I guess pass in one, and then other persisted classes can request
         // data from their own schema...
         PersistentClass persistedClass = persistedClassMap.get(persistClass);
-        if (persistedClass == null)
-        {
+        if (persistedClass == null) {
             PersistClass entityAnnotation = persistClass.getAnnotation(PersistClass.class);
             Migrate migrationAnnotation = persistClass.getAnnotation(Migrate.class);
 
-            if (entityAnnotation == null)
-            {
+            if (entityAnnotation == null) {
                 throw new InvalidPersistedClassException(persistClass, "Class does not have the @PersistClass annotation");
             }
 
             persistedClass = getPersistedClass(persistClass, new EntityInfo(entityAnnotation));
 
-            if (migrationAnnotation != null)
-            {
+            if (migrationAnnotation != null) {
                 persistedClass.setMigrationInfo(new MigrationInfo(persistedClass, migrationAnnotation));
             }
 
@@ -317,19 +275,14 @@ public class Persistence implements
         return persistedClass;
     }
 
-    protected PersistentClass createPersistedClass(
-            Class<? extends Object> persistType, EntityInfo entityInfo)
-            throws InvalidPersistedClassException
-    {
+    protected PersistentClass createPersistedClass(Class<? extends Object> persistType, EntityInfo entityInfo) throws InvalidPersistedClassException {
         PersistentClass persistedClass = new PersistentClass(this, entityInfo);
-        if (!persistedClass.bind(persistType))
-        {
+        if (!persistedClass.bind(persistType)) {
             return null;
         }
         String schemaName = persistedClass.getSchemaName();
         Schema schema = getSchema(schemaName);
-        if (schema == null)
-        {
+        if (schema == null) {
             schema = createSchema(schemaName);
         }
         schema.addPersistedClass(persistedClass);
@@ -343,11 +296,9 @@ public class Persistence implements
         return persistedClass;
     }
 
-    protected Schema createSchema(String schemaName)
-    {
+    protected Schema createSchema(String schemaName) {
         Schema schema = schemaMap.get(schemaName);
-        if (schema == null)
-        {
+        if (schema == null) {
             schemaName = schemaName.toLowerCase();
             DataStore store = createStore(schemaName);
             schema = new Schema(schemaName, store);
@@ -361,30 +312,21 @@ public class Persistence implements
      * 
      * This can be used to create a persisted class based on a existing class.
      * 
-     * @param persistType
-     *            The Class to persist
-     * @param entityInfo
-     *            Information on how to persist this class
+     * @param persistType The Class to persist
+     * @param entityInfo Information on how to persist this class
+     * 
      * @return The persisted class definition, or null if failure
      */
-    public PersistentClass getPersistedClass(
-            Class<? extends Object> persistType, EntityInfo entityInfo)
-    {
+    public PersistentClass getPersistedClass(Class<? extends Object> persistType, EntityInfo entityInfo) {
         PersistentClass persistedClass = persistedClassMap.get(persistType);
-        if (persistedClass == null)
-        {
+        if (persistedClass == null) {
             // Lock now, to create an atomic checkCreate for class:
-            synchronized (classCreateLock)
-            {
+            synchronized (classCreateLock) {
                 persistedClass = persistedClassMap.get(persistType);
-                if (persistedClass == null)
-                {
-                    try
-                    {
+                if (persistedClass == null) {
+                    try {
                         persistedClass = createPersistedClass(persistType, entityInfo);
-                    }
-                    catch (InvalidPersistedClassException e)
-                    {
+                    } catch (InvalidPersistedClassException e) {
                         // TODO Auto-generated catch block
                         e.printStackTrace();
                     }
@@ -398,31 +340,25 @@ public class Persistence implements
      * Protected members
      */
 
-    protected DataStore createStore(String schema)
-    {
+    protected DataStore createStore(String schema) {
         return provider.createStore(schema);
     }
 
-    public void disconnect()
-    {
-        for (Schema schema : schemaMap.values())
-        {
+    public void disconnect() {
+        for (Schema schema : schemaMap.values()) {
             schema.disconnect();
         }
     }
 
-    public static boolean getOpsCanSU()
-    {
+    public static boolean getOpsCanSU() {
         return allowOpsSUAccess;
     }
 
-    public static void setOpsCanSU(boolean allow)
-    {
+    public static void setOpsCanSU(boolean allow) {
         allowOpsSUAccess = allow;
     }
 
-    public Server getServer()
-    {
+    public Server getServer() {
         return server;
     }
 }

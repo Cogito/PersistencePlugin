@@ -10,26 +10,17 @@ import com.elmakers.mine.bukkit.persisted.PersistedClass;
 import com.elmakers.mine.bukkit.persisted.Persistence;
 
 @PersistClass(schema = "global", name = "migration")
-public class MigrationStep extends Persisted
-{
+public class MigrationStep extends Persisted {
     List<MigrationStep> dependencies;
+    String entity;
+    int id;
+    String pluginVersion;
+    String schema;
+    String sqlData;
+    String stepId;
+    MigrationType type;
 
-    String              entity;
-
-    int                 id;
-
-    String              pluginVersion;
-
-    String              schema;
-
-    String              sqlData;
-
-    String              stepId;
-
-    MigrationType       type;
-
-    public MigrationStep(PersistedClass entityClass, MigrateStep info)
-    {
+    public MigrationStep(PersistedClass entityClass, MigrateStep info) {
         // Basic info - this should be kept unique, it's used as a secondary id
         // to match back up to the annotations later, since we can't exactly
         // stick an autogen id back into their code.
@@ -52,17 +43,12 @@ public class MigrationStep extends Persisted
         pluginVersion = info.pluginVersion();
 
         // Figure out type from annotation
-        if (info.reset())
-        {
+        if (info.reset()) {
             type = MigrationType.RESET;
-        }
-        else if (info.statement().length() > 0)
-        {
+        } else if (info.statement().length() > 0) {
             sqlData = info.statement();
             type = MigrationType.STATEMENT;
-        }
-        else if (info.script().length() > 0)
-        {
+        } else if (info.script().length() > 0) {
             sqlData = info.statement();
         }
 
@@ -70,9 +56,7 @@ public class MigrationStep extends Persisted
         schema = entityClass.getEntityInfo().getSchema();
     }
 
-    public MigrationStep(Persistence persistence)
-    {
-    }
+    public MigrationStep(Persistence persistence) {}
 
     /**
      * Add a dependency for this migration step.
@@ -80,57 +64,45 @@ public class MigrationStep extends Persisted
      * Plan to use this make sure multiple migration steps happen in the right
      * order. Not implemented yet.
      * 
-     * @param step
-     *            The step this step depends on.
+     * @param step The step this step depends on.
      */
-    public void dependsOn(MigrationStep step)
-    {
-
-    }
+    public void dependsOn(MigrationStep step) {}
 
     @PersistField
-    public List<MigrationStep> getDependencies()
-    {
+    public List<MigrationStep> getDependencies() {
         return dependencies;
     }
 
     @PersistField
-    public String getEntity()
-    {
+    public String getEntity() {
         return entity;
     }
 
     @PersistField(id = true, auto = true)
-    public int getId()
-    {
+    public int getId() {
         return id;
     }
 
     @PersistField
-    public String getPluginVersion()
-    {
+    public String getPluginVersion() {
         return pluginVersion;
     }
 
     @PersistField
-    public String getSchema()
-    {
+    public String getSchema() {
         return schema;
     }
 
-    public String getScriptName()
-    {
+    public String getScriptName() {
         return sqlData;
     }
 
     @PersistField
-    public String getSqlData()
-    {
+    public String getSqlData() {
         return sqlData;
     }
 
-    public String getSQLStatement()
-    {
+    public String getSQLStatement() {
         return sqlData;
     }
 
@@ -138,54 +110,44 @@ public class MigrationStep extends Persisted
     // STATEMENT and SCRIPT types
 
     @PersistField
-    public String getStepId()
-    {
+    public String getStepId() {
         return stepId;
     }
 
     @PersistField
-    public MigrationType getType()
-    {
+    public MigrationType getType() {
         return type;
     }
 
-    public void setDependencies(List<MigrationStep> dependencies)
-    {
+    public void setDependencies(List<MigrationStep> dependencies) {
         this.dependencies = dependencies;
     }
 
-    public void setEntity(String entity)
-    {
+    public void setEntity(String entity) {
         this.entity = entity;
     }
 
-    public void setId(int id)
-    {
+    public void setId(int id) {
         this.id = id;
     }
 
-    public void setPluginVersion(String pluginVersion)
-    {
+    public void setPluginVersion(String pluginVersion) {
         this.pluginVersion = pluginVersion;
     }
 
-    public void setSchema(String schema)
-    {
+    public void setSchema(String schema) {
         this.schema = schema;
     }
 
-    public void setSqlData(String sqlData)
-    {
+    public void setSqlData(String sqlData) {
         this.sqlData = sqlData;
     }
 
-    public void setStepId(String stepId)
-    {
+    public void setStepId(String stepId) {
         this.stepId = stepId;
     }
 
-    public void setType(MigrationType type)
-    {
+    public void setType(MigrationType type) {
         this.type = type;
     }
 }

@@ -19,46 +19,37 @@ import com.elmakers.mine.bukkit.data.DataType;
  * @author NathanWolf
  * 
  */
-public abstract class SqlStore extends DataStore
-{
-    protected static boolean driversLoaded    = false;
+public abstract class SqlStore extends DataStore {
+    protected static boolean driversLoaded = false;
     protected static boolean logSqlStatements = false;
 
-    public static void logSqlStatement(String statement)
-    {
-        if (logSqlStatements)
-        {
+    public static void logSqlStatement(String statement) {
+        if (logSqlStatements) {
             log.info("Persistence: SQL: " + statement);
         }
     }
 
     protected Connection connection = null;
 
-    public SqlStore(String schema)
-    {
+    public SqlStore(String schema) {
         super(schema);
     }
 
     @Override
-    public boolean clear(DataTable table)
-    {
+    public boolean clear(DataTable table) {
         String deleteSql = "DELETE FROM \"" + table.getName() + "\"";
 
-        try
-        {
+        try {
             PreparedStatement deleteStatement = connection.prepareStatement(deleteSql);
             logSqlStatement(deleteSql);
             deleteStatement.execute();
-        }
-        catch (SQLException ex)
-        {
+        } catch (SQLException ex) {
             log.warning("Persistence: Error deleting list " + table.getName() + ": " + ex.getMessage());
             log.info(deleteSql);
             return false;
         }
 
-        if (table.getRows().size() > 0)
-        {
+        if (table.getRows().size() > 0) {
             save(table);
         }
 
@@ -66,18 +57,15 @@ public abstract class SqlStore extends DataStore
     }
 
     @Override
-    public boolean clearIds(DataTable table, List<Object> ids)
-    {
+    public boolean clearIds(DataTable table, List<Object> ids) {
         int rowCount = 0;
 
-        if (ids.size() <= 0)
-        {
+        if (ids.size() <= 0) {
             return true;
         }
 
         List<String> idFields = table.getIdFieldNames();
-        if (idFields.size() < 1)
-        {
+        if (idFields.size() < 1) {
             return false;
         }
 
@@ -86,10 +74,8 @@ public abstract class SqlStore extends DataStore
         String deleteSql = "DELETE FROM \"" + tableName + "\" WHERE \"" + idField + "\" IN (";
 
         boolean firstId = true;
-        for (int i = 0; i < ids.size(); i++)
-        {
-            if (!firstId)
-            {
+        for (int i = 0; i < ids.size(); i++) {
+            if (!firstId) {
                 deleteSql += ", ";
             }
             firstId = false;
@@ -98,28 +84,23 @@ public abstract class SqlStore extends DataStore
         }
         deleteSql += ")";
 
-        try
-        {
+        try {
             PreparedStatement deleteStatement = connection.prepareStatement(deleteSql);
 
             int index = 1;
-            for (Object id : ids)
-            {
+            for (Object id : ids) {
                 deleteStatement.setObject(index, id);
                 index++;
             }
             logSqlStatement(deleteSql);
             deleteStatement.execute();
-        }
-        catch (SQLException ex)
-        {
+        } catch (SQLException ex) {
             log.warning("Persistence: Error deleting ids " + tableName + ": " + ex.getMessage());
             log.info(deleteSql);
             return false;
         }
 
-        if (table.getRows().size() > 0)
-        {
+        if (table.getRows().size() > 0) {
             save(table);
         }
 
@@ -129,37 +110,27 @@ public abstract class SqlStore extends DataStore
     }
 
     @Override
-    public boolean connect()
-    {
-        if (connection != null)
-        {
+    public boolean connect() {
+        if (connection != null) {
             boolean closed = true;
-            try
-            {
+            try {
                 closed = connection.isClosed();
-            }
-            catch (SQLException ex)
-            {
+            } catch (SQLException ex) {
                 closed = true;
             }
-            if (!closed)
-            {
+            if (!closed) {
                 return true;
             }
         }
 
         // Try to load drivers if necessary
-        if (!driversLoaded)
-        {
+        if (!driversLoaded) {
             // Check to see if the driver is loaded
             String jdbcClass = getDriverClassName();
-            try
-            {
+            try {
                 Class.forName(jdbcClass);
                 driversLoaded = true;
-            }
-            catch (ClassNotFoundException e)
-            {
+            } catch (ClassNotFoundException e) {
                 driversLoaded = false;
             }
         }
@@ -170,12 +141,9 @@ public abstract class SqlStore extends DataStore
         String user = "";
         String password = "";
 
-        try
-        {
+        try {
             connection = DriverManager.getConnection(getConnectionString(schema, user, password));
-        }
-        catch (SQLException e)
-        {
+        } catch (SQLException e) {
             connection = null;
             log.severe("Permissions: error connecting to sqllite db: " + e.getMessage());
         }
@@ -184,16 +152,13 @@ public abstract class SqlStore extends DataStore
     }
 
     @Override
-    public boolean create(DataTable table)
-    {
+    public boolean create(DataTable table) {
         String tableName = table.getName();
         String createStatement = "CREATE TABLE \"" + tableName + "\" (";
         int fieldCount = 0;
         DataRow header = table.getHeader();
-        for (DataField field : header.getFields())
-        {
-            if (fieldCount != 0)
-            {
+        for (DataField field : header.getFields()) {
+            if (fieldCount != 0) {
                 createStatement += ",";
             }
             fieldCount++;
@@ -204,10 +169,8 @@ public abstract class SqlStore extends DataStore
         List<String> idFields = table.getIdFieldNames();
         createStatement += ", PRIMARY KEY (";
         boolean firstField = true;
-        for (String id : idFields)
-        {
-            if (!firstField)
-            {
+        for (String id : idFields) {
+            if (!firstField) {
                 createStatement += ", ";
             }
             firstField = false;
@@ -216,21 +179,17 @@ public abstract class SqlStore extends DataStore
         }
         createStatement += "))";
 
-        if (fieldCount == 0)
-        {
+        if (fieldCount == 0) {
             log.warning("Persistence: class " + tableName + " has no fields");
             return false;
         }
 
         logStoreAccess("Persistence: Created table " + schema + "." + tableName);
-        try
-        {
+        try {
             PreparedStatement ps = connection.prepareStatement(createStatement);
             logSqlStatement(createStatement);
             ps.execute();
-        }
-        catch (SQLException ex)
-        {
+        } catch (SQLException ex) {
             log.severe("Peristence: error creating table: " + ex.getMessage());
             log.info(createStatement);
         }
@@ -239,16 +198,11 @@ public abstract class SqlStore extends DataStore
     }
 
     @Override
-    public void disconnect()
-    {
-        if (connection != null)
-        {
-            try
-            {
+    public void disconnect() {
+        if (connection != null) {
+            try {
                 connection.close();
-            }
-            catch (SQLException e)
-            {
+            } catch (SQLException e) {
 
             }
         }
@@ -256,19 +210,14 @@ public abstract class SqlStore extends DataStore
     }
 
     @Override
-    public boolean drop(String tableName)
-    {
-        if (tableExists(tableName))
-        {
+    public boolean drop(String tableName) {
+        if (tableExists(tableName)) {
             String dropQuery = "DROP TABLE \"" + tableName + "\"";
-            try
-            {
+            try {
                 PreparedStatement ps = connection.prepareStatement(dropQuery);
                 logSqlStatement(dropQuery);
                 ps.execute();
-            }
-            catch (SQLException ex)
-            {
+            } catch (SQLException ex) {
                 log.severe("Persistence: error dropping table: " + ex.getMessage());
                 log.info(dropQuery);
                 return false;
@@ -278,8 +227,7 @@ public abstract class SqlStore extends DataStore
         return true;
     }
 
-    public abstract String getConnectionString(String schema, String user,
-            String password);
+    public abstract String getConnectionString(String schema, String user, String password);
 
     public abstract String getDriverClassName();
 
@@ -287,23 +235,18 @@ public abstract class SqlStore extends DataStore
 
     public abstract String getTypeName(DataType dataType);
 
-    public boolean isConnected()
-    {
+    public boolean isConnected() {
         boolean isClosed = true;
-        try
-        {
+        try {
             isClosed = connection == null || connection.isClosed();
-        }
-        catch (SQLException e)
-        {
+        } catch (SQLException e) {
             isClosed = true;
         }
         return connection != null && !isClosed;
     }
 
     @Override
-    public boolean load(DataTable table)
-    {
+    public boolean load(DataTable table) {
         String tableName = table.getName();
 
         // Select all columns instead of building a column list
@@ -316,25 +259,20 @@ public abstract class SqlStore extends DataStore
         return rowCount >= 0;
     }
 
-    protected int load(DataTable table, String sqlQuery)
-    {
+    protected int load(DataTable table, String sqlQuery) {
         int rowCount = 0;
-        try
-        {
+        try {
             PreparedStatement ps = connection.prepareStatement(sqlQuery);
             logSqlStatement(sqlQuery);
             ResultSet rs = ps.executeQuery();
 
-            while (rs.next())
-            {
+            while (rs.next()) {
                 SqlDataRow row = new SqlDataRow(table, rs);
                 table.addRow(row);
                 rowCount++;
             }
             rs.close();
-        }
-        catch (SQLException ex)
-        {
+        } catch (SQLException ex) {
             log.warning("Persistence: Error selecting from table " + table.getName() + ": " + ex.getMessage());
             return -1;
         }
@@ -347,18 +285,15 @@ public abstract class SqlStore extends DataStore
      * 
      * @return false if the connection failed.
      */
-    public boolean onConnect()
-    {
+    public boolean onConnect() {
         return true;
     }
 
     @Override
-    public boolean save(DataTable table)
-    {
+    public boolean save(DataTable table) {
         int rowCount = 0;
 
-        if (table.getRows().size() == 0)
-        {
+        if (table.getRows().size() == 0) {
             return clear(table);
         }
 
@@ -368,10 +303,8 @@ public abstract class SqlStore extends DataStore
         int fieldCount = 0;
         DataRow header = table.getHeader();
 
-        for (DataField field : header.getFields())
-        {
-            if (fieldCount != 0)
-            {
+        for (DataField field : header.getFields()) {
+            if (fieldCount != 0) {
                 fieldList += ", ";
                 valueList += ", ";
             }
@@ -380,23 +313,19 @@ public abstract class SqlStore extends DataStore
             valueList += "?";
         }
 
-        if (fieldCount == 0)
-        {
+        if (fieldCount == 0) {
             log.warning("Persistence: class " + tableName + " has no fields");
             return false;
         }
 
         String updateSql = "INSERT OR REPLACE INTO \"" + tableName + "\" (" + fieldList + ") VALUES (" + valueList + ")";
-        for (DataRow row : table.getRows())
-        {
-            try
-            {
+        for (DataRow row : table.getRows()) {
+            try {
                 PreparedStatement updateStatement = connection.prepareStatement(updateSql);
 
                 int index = 1;
                 List<DataField> fields = row.getFields();
-                for (DataField field : fields)
-                {
+                for (DataField field : fields) {
                     SqlDataField.setValue(updateStatement, index, field.getValue(), field.getType());
                     index++;
                 }
@@ -404,9 +333,7 @@ public abstract class SqlStore extends DataStore
                 rowCount++;
                 logSqlStatement(updateSql);
                 updateStatement.execute();
-            }
-            catch (SQLException ex)
-            {
+            } catch (SQLException ex) {
                 log.warning("Persistence: Error updating table " + tableName + ": " + ex.getMessage());
                 log.info(updateSql);
                 return false;
@@ -420,20 +347,16 @@ public abstract class SqlStore extends DataStore
     }
 
     @Override
-    public boolean tableExists(String tableName)
-    {
+    public boolean tableExists(String tableName) {
         String checkQuery = "SELECT name FROM \"" + getMasterTableName() + "\" WHERE type='table' AND name='" + tableName + "'";
         boolean tableExists = false;
-        try
-        {
+        try {
             PreparedStatement ps = connection.prepareStatement(checkQuery);
             logSqlStatement(checkQuery);
             ResultSet rs = ps.executeQuery();
             tableExists = rs.next();
             rs.close();
-        }
-        catch (SQLException ex)
-        {
+        } catch (SQLException ex) {
             log.severe("Persistence: Error getting table data: " + ex.getMessage());
             log.info(checkQuery);
             return false;
